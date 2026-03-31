@@ -8,6 +8,8 @@ import utls
 import time
 import cv2
 import argparse
+import time
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--input", "-i", type=str, default='../input', help='test image folder')
@@ -30,7 +32,7 @@ path = glob(input_folder+'/*.*')
 model_name = arg.model
 mbllen = Network.build_mbllen((None, None, 3))
 mbllen.load_weights('../models/'+model_name+'.h5')
-opt = keras.optimizers.Adam(lr=2 * 1e-04, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+opt = keras.optimizers.Adam(learning_rate=2 * 1e-04, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 mbllen.compile(loss='mse', optimizer=opt)
 
 flag = arg.com
@@ -43,9 +45,9 @@ for i in range(len(path)):
     img_A = utls.imread_color(img_A_path)
     img_A = img_A[np.newaxis, :]
 
-    starttime = time.clock()
+    starttime = time.perf_counter()
     out_pred = mbllen.predict(img_A)
-    endtime = time.clock()
+    endtime = time.perf_counter()
     print('The ' + str(i+1)+'th image\'s Time:' +str(endtime-starttime)+'s.')
     fake_B = out_pred[0, :, :, :3]
     fake_B_o = fake_B
